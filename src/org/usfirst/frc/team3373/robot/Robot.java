@@ -44,18 +44,18 @@ public class Robot extends TimedRobot {
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
-	static int actuator1Port1 = 5;
+	static int actuator1Port1 = 7;
 	static int actuator1Port2 = 8;
-	static int actuator2Port1 = 4;
+	static int actuator2Port1 = 10;
 	static int actuator2Port2 = 9;
-	static double minPot1 = 104;
-	static double minPot2 = 108;
-	static double maxPot1 = 960;
-	static double maxPot2 = 989;
-	static double minDistance1 = 1;
-	static double minDistance2 = 1;
-	static double maxDistance1 = 29.1;
-	static double maxDistance2 = 30;
+	static double minPot1 = 97;
+	static double minPot2 = 95;
+	static double maxPot1 = 725;
+	static double maxPot2 = 726;
+	static double minDistance1 = 2;
+	static double minDistance2 = 2;
+	static double maxDistance1 = 26.5;
+	static double maxDistance2 = 26.5;
 	
 	//Grabber Initialization
 	int grabberPort1 =0; // Need to updtate for the Robot
@@ -130,7 +130,7 @@ public class Robot extends TimedRobot {
 		}
 		m_autoSelected = m_chooser.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
+		// go r0idefaultAuto);
 		System.out.println("Auto selected: " + m_autoSelected);
 	}
 
@@ -163,7 +163,7 @@ public class Robot extends TimedRobot {
 	public void teleopPeriodic() {
 		//Lift Code for Actuators Moving Together
 		if(shooter.getRawAxis(Rtrigger)>.1)
-			actuators.goToPosition(25);
+			actuators.goToPosition(26.5);
 		else if(shooter.getRawAxis(Ltrigger)>.1)
 			actuators.goToPosition(3);
 		else
@@ -187,5 +187,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testPeriodic() {
 		actuators.calibrate(shooter, false);
+		actuators.calibrate(shooter, true);
 	}
 }

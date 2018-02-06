@@ -16,6 +16,8 @@ public class Actuator{
 		actuatorName = port1; // For calibration proccedor, gives Dashboard name for actuator
 		talon1 = new SupremeTalon(port1);
 		talon2 = new SupremeTalon(port2);
+		talon1.setBrakeMode();
+		talon2.setBrakeMode();
 		maxPot = maxPot1;
 		minPot = minPot1;
 		maxDistance = maxTravel; // Distance is in Centimeters
@@ -27,7 +29,7 @@ public class Actuator{
 		double deltaPot = maxPot-minPot;
 		double deltaDistance = maxDistance - minDistance;
 		double slope = deltaDistance/deltaPot;
-		return slope*(talon1.getSelectedSensorPosition(0)-minPot)+minDistance; //calculates linear relationship between pot values and centimeters
+		return slope*(talon1.getRawSensor()-minPot)+minDistance; //calculates linear relationship between pot values and centimeters
 	}
 	public double getRawPosition(int num){
 		//returns Analog Position
@@ -37,24 +39,28 @@ public class Actuator{
 		boolean isLimitReached =false;
 		double initialspeed = speed;
 		if(speed >0){//going towards top of travel
-			double distanceToTop = maxPot-talon1.getSelectedSensorPosition(0);
-			speed = speed * distanceToTop*.005; //set speed to be proportional to the distance from extrema
+			double distanceToTop = maxPot-talon1.getRawSensor();
+			speed = speed * Math.abs(distanceToTop)*.025; //set speed to be proportional to the distance from extrema
 			if(speed > initialspeed){ //makes sure the magnitude of the velocity is not greater than the passed in velocity
 				speed = initialspeed;
 			}
+			if((talon1.getRawSensor()>maxPot)){
+				speed = 0;
+			}
 		}else if(speed<0){	//going towards bottom of travel
-			double distanceToBot = talon1.getSelectedSensorPosition(0)- minPot;
-			speed= speed * distanceToBot*.005;  //set speed to be proportional to the distance from extrema
+			double distanceToBot = talon1.getRawSensor()- minPot;
+			speed= speed * Math.abs(distanceToBot)*.025;  //set speed to be proportional to the distance from extrema
 			if(speed < initialspeed){ //makes sure the magnitude of the velocity is not greater than the passed in velocity
 				speed = initialspeed;
 			}
+			if((talon1.getRawSensor()<minPot)){
+				speed = 0;
+			}
 		}
-		if((talon1.getSelectedSensorPosition(0)>maxPot)||(talon1.getSelectedSensorPosition(0)<minPot)){
-			talon1.set(0);
-			isLimitReached = true;
-		}
+	
 		if(!isLimitReached)
 			talon1.accelerate(speed, .05, false);
+			talon2.accelerate(speed, .05, false);
 		
 	}
 	public void superSet(double speed){
@@ -66,6 +72,7 @@ public class Actuator{
 		//Manually move actuator to roughly min and max
 		// record Potentiometer and Cm Values in Robot.java in the Dual Actuator Calibration Setting
 		talon1.set(stick.getRawAxis(1)*.2);
-		SmartDashboard.putNumber("Actuator PotValue " + actuatorName,talon1.getSelectedSensorPosition(0));
+		talon2.set(stick.getRawAxis(1)*.2);
+		SmartDashboard.putNumber("Actuator PotValue " + actuatorName,talon1.getRawSensor());
 	}
 }
