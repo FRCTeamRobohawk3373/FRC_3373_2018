@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LidarSensor {
 	private I2C lidar;
-	private int pdist = 0;
+	private double pdist = 0;
 	//private int dist;
 	//private byte dish;
 	//private byte disl;
@@ -24,7 +24,7 @@ public class LidarSensor {
 		lidar.write(0x1c, 0x00);
 	}
 	
-	public int getDistance() {
+	public double getDistance() {
 		if(!reqRead) {
 			lidar.write(0x00, 0x00);
 			lidar.write(0x00, 0x04);
@@ -37,18 +37,20 @@ public class LidarSensor {
 		return pdist;
 	}
 	
-	private int readDist() {
-		int dist = -1;
+	private double readDist() {
+		double cent = -1;
+		double inch = -1;
 		byte[] distance = {00000000, 00000000};
 		sendData[0] = (byte) 0x8f;
 		lidar.writeBulk(sendData, 1);
 		lidar.readOnly(distance, 2);
 		SmartDashboard.putRaw("RawDistance", distance);
 		//dist = convert(distance);
-		dist = (distance[0]<<8)+distance[1];
-		if(dist!=0) {
-			pdist = dist;
-			return dist;
+		cent = ((distance[0] & 0xff) << 8) | (distance[1] & 0xff);
+		if(cent!=0) {
+			inch = cent / 2.54;
+			pdist = inch;
+			return inch;
 		}
 		return pdist;
 	}
@@ -70,7 +72,6 @@ public class LidarSensor {
 		sendData[0] = 0x01;
 		lidar.writeBulk(sendData, 1);
 		lidar.readOnly(check, 2);
-		System.out.println("Check: " + check);
 		if (bitRead(check[0], 0)) {
 			return true;
 		} else {
