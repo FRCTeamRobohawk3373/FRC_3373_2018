@@ -24,8 +24,8 @@ public class Grabber {
 		grab1.set(1);
 	}
 	public void set(double power){
-		grab1.set(power);
-		grab2.set(-power);
+		grab1.set(-power);
+		grab2.set(power);
 	}
 /*	public void keepCube(){ // keep cube in grabber
 		grab1.accelerate(.2,.05,false);

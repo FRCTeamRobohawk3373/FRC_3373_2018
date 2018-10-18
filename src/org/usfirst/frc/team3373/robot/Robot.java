@@ -107,9 +107,9 @@ public class Robot extends TimedRobot {
 
 	int RFdriveChannel = 6;
 	int RFrotateID = 5;
-	int RFencOffset = 628;
-	int RFEncMin = 10;
-	int RFEncMax = 889;
+	int RFencOffset = 65;
+	int RFEncMin = 9;
+	int RFEncMax = 891;
 	double RFWheelMod = 1;
 	
 	int leftUltraSonicPort =2;
@@ -246,11 +246,9 @@ public class Robot extends TimedRobot {
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		
-
-		
-		
 		driver = new SuperJoystick(0);
 		shooter = new SuperJoystick(1);
+		
 		grabber = new Grabber(grabberPort1,grabberPort2);
 		climbBar = new ClimbBar(2);
 		
@@ -476,21 +474,23 @@ public class Robot extends TimedRobot {
 		
 		//   *_*_*_*_*_*_*_* SHARED MAIN CONTROLS *_*_*_*_*_*_*_*
 		
-		if(driver.isStartHeld() && shooter.isStartHeld()){
-		climbBar.setState(false);
+		/*if(driver.isStartHeld() && shooter.isStartHeld()){
+			climbBar.setState(false);
 		}else{
-		climbBar.setState(true);
+			climbBar.setState(true);
 		}
+		*/
 		
 		
 		//   *_*_*_*_*_*_*_* DRIVER MAIN CONTROLS *_*_*_*_*_*_*_*
-		if (driver.isLBHeld() ){//|| lifter.getPosition() < 10) {
+		if (driver.isLBHeld() || lifter.getPosition() < 10) {
 			swerve.sniper();
-		} else if (driver.isRBHeld()) {
+		} else if (driver.isRBHeld() && lifter.getPosition() > 15) {
 			swerve.turbo();
 		} else {
 			swerve.normalSpeed();
 		}
+		
 		if (driver.getRawAxis(Rtrigger) > .1) {
 			swerve.isFieldCentric = true;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
@@ -509,15 +509,16 @@ public class Robot extends TimedRobot {
 		if(shooter.getRawAxis(Ltrigger)>.1)
 			lifter.goToPosition(27.5);
 		else if(shooter.getRawAxis(Rtrigger)>.1)
-			lifter.goToPosition(2);
+			lifter.goToPosition(2.5);
 		else
 			lifter.goToPosition(lifter.getPosition()); 
+		/*
 		if(shooter.isAHeld()){
 			lifter.setProportional(.4);
 		}
 		else{
 			lifter.setProportional(.05);;
-		}
+		}*/
 		
 		if(Math.abs(shooter.getRawAxis(LY)) > .1){
 			grabber.set(shooter.getRawAxis(LY));
@@ -528,9 +529,9 @@ public class Robot extends TimedRobot {
 		}else{
 			grabber.set(0);
 		}
-		if(shooter.isBackHeld()){
+		/*if(shooter.isBackHeld()){
 			lifter.setMaxSpeed(1);
-		}
+		}*/
 		
 		
 		
